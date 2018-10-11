@@ -1,40 +1,36 @@
 <?php
-/**
- * Ejemplo 2
- * Como crear un charge a una tarjeta usando Culqi PHP.
- */
+header('Content-Type: application/json');
 
+require '../Requests-master/library/Requests.php';
+Requests::register_autoloader();
+require '../lib/culqi.php';
+
+use Culqi\Culqi;
+
+$SECRET_API_KEY = 'sk_test_tGg70Nxa1NvzebK2';
+$culqi = new Culqi(array('api_key' => $SECRET_API_KEY));
 try {
-  // Usando Composer (o puedes incluir las dependencias manualmente)
-  require '../Requests-master/library/Requests.php';
-  Requests::register_autoloader();
-  require '../lib/culqi.php';
-
-
-  // Configurar tu API Key y autenticación
-  $SECRET_API_KEY = "sk_test_BdM7XfNDlgF0jG4g";
-  $culqi = new Culqi\Culqi(array('api_key' => $SECRET_API_KEY));
-  
   // Creando Cargo a una tarjeta
-  $charge = $culqi->Charges->create(
-      array(
-        "amount" => 200,
-        "currency_code" => "PEN",
-        "email" => "prueba@culqi.com",
-        "source_id" => $_POST["token"] ,
-        "antifraud_details" => array(
-            "address" =>"Calle Narciso de la Colima",
-            "address_city"=> "Lima",
-            "country_code" => "PE",
-            "first_name" => "Liz",
-            "last_name" => "Ruelas",
-            "phone_number" => 123456789
-          )
+$charge = $culqi->Charges->create(
+    array(
+      "amount" => 1000,
+      "currency_code" => "PEN",
+      "email" => "liz.ruelas@culqi.com",
+      "source_id" => $_POST["token"] ,
+      "installments" => $_POST["cuotas"],
+      "antifraud_details" => array(
+          "address" =>"Calle Narciso de la Colina 421",
+          "address_city"=> "Lima",
+          "country_code" => "PE",
+          "first_name" => "Liz",
+          "last_name" => "Ruelas",
+          "phone_number" => 123456789
       )
-  );
-  // Respuesta
-  echo "ok";
-  
+    )
+);
+  // Response
+  echo json_encode($charge);
 } catch (Exception $e) {
   echo json_encode($e->getMessage());
 }
+?>
